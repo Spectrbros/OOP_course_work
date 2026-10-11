@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 import copy
 
-# test branch
-
 class Price:
     def __init__(self, val: int):
         if val < 0:
@@ -15,7 +13,7 @@ class Price:
 
     @value.setter
     def value(self, val: int):
-        if self._value < 0:
+        if val < 0:
             raise ValueError("Price can't be negative")
         self._value = val
 
@@ -32,7 +30,7 @@ class Quantity:
 
     @value.setter
     def value(self, val: int):
-        if self._value < 0:
+        if val < 0:
             raise ValueError("Quantity can't be negative")
         self._value = val
 
@@ -49,7 +47,7 @@ class Weight:
 
     @value.setter
     def value(self, val: int):
-        if self._value < 0:
+        if val < 0:
             raise ValueError("Weight can't be negative")
         self._value = val
 
@@ -57,57 +55,85 @@ class Weight:
 class Product(ABC):
     _count = 0
 
-    def __init__(self, name: str, category: str, price: Price, quantity: Quantity, weight: Weight):
+    def __init__(self, name: str, category: str, price: int, quantity: int, weight: float):
         self._id = Product._count + 1
         Product._count += 1
         self._name = name
         self._category = category
-        self._price = price
-        self._quantity = quantity
-        self._weight = weight
+        self._price = Price(price)
+        self._quantity = Quantity(quantity)
+        self._weight = Weight(weight)
 
     @property
-    @abstractmethod
     def id(self) -> int:
-        ...
+        return self._id
 
     @property
-    @abstractmethod
     def name(self) -> str:
-        ...
+        return self._name
 
     @property
-    @abstractmethod
     def category(self) -> str:
-        ...
+        return self._category
 
     @property
-    @abstractmethod
     def price(self) -> Price:
-        ...
+        return self._price
 
     @property
-    @abstractmethod
-    def quantity(self):
-        ...
+    def quantity(self) -> Quantity:
+        return self._quantity
 
     @property
-    @abstractmethod
-    def weight(self):
-        ...
+    def weight(self) -> Weight:
+        return self._weight
+
+    @classmethod
+    def get_count(cls) -> int:
+        return Product._count
 
     @abstractmethod
     def clone(self) -> "Product":
         ...
 
+
 class Electronics(Product, ABC):
-    def __init__(self, name, category, price, quantity, weight):
-        super().__init__(self, name, "electronics", price, quantity, weight)
+    def __init__(self, name, price, quantity, weight):
+        super().__init__(name, "electronics", price, quantity, weight)
 
 class Clothing(Product, ABC):
-    def __init__(self, name, category, price, quantity, weight):
-        super().__init__(self, name, "clothing", price, quantity, weight)
+    def __init__(self, name, price, quantity, weight):
+        super().__init__(name, "clothing", price, quantity, weight)
 
 class Food(Product, ABC):
-    def __init__(self, name, category, price, quantity, weight):
-        super().__init__(self, name, "food", price, quantity, weight)
+    def __init__(self, name, price, quantity, weight):
+        super().__init__(name, "food", price, quantity, weight)
+
+
+class Smartphone(Electronics):
+    def __init__(self, name, price,quantity,weight):
+        super().__init__(name, price, quantity, weight)
+
+    @property
+    def id(self) -> int:
+        return self._id
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def category(self) -> str:
+        return self._category
+
+    def price(self) -> Price:
+        return self._price
+
+    def quantity(self) -> Quantity:
+        return self._quantity
+
+    def weight(self) -> Weight:
+        return self._weight
+
+    def clone(self) -> "Product":
+        return copy.deepcopy(self)
