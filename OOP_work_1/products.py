@@ -36,17 +36,17 @@ class Quantity:
 
 
 class Weight:
-    def __init__(self, val: int):
+    def __init__(self, val: float):
         if val < 0:
             raise ValueError("Weight can't be negative")
         self._value = val
 
     @property
-    def value(self) -> int:
+    def value(self) -> float:
         return self._value
 
     @value.setter
-    def value(self, val: int):
+    def value(self, val: float):
         if val < 0:
             raise ValueError("Weight can't be negative")
         self._value = val
@@ -88,10 +88,6 @@ class Product(ABC):
     def weight(self) -> Weight:
         return self._weight
 
-    @classmethod
-    def get_count(cls) -> int:
-        return Product._count
-
     @abstractmethod
     def clone(self) -> "Product":
         ...
@@ -101,9 +97,11 @@ class Electronics(Product, ABC):
     def __init__(self, name, price, quantity, weight):
         super().__init__(name, "electronics", price, quantity, weight)
 
+
 class Clothing(Product, ABC):
     def __init__(self, name, price, quantity, weight):
         super().__init__(name, "clothing", price, quantity, weight)
+
 
 class Food(Product, ABC):
     def __init__(self, name, price, quantity, weight):
@@ -114,26 +112,45 @@ class Smartphone(Electronics):
     def __init__(self, name, price,quantity,weight):
         super().__init__(name, price, quantity, weight)
 
-    @property
-    def id(self) -> int:
-        return self._id
+    def clone(self) -> "Product":
+        return copy.deepcopy(self)
 
-    @property
-    def name(self) -> str:
-        return self._name
 
-    @property
-    def category(self) -> str:
-        return self._category
+class Laptop(Electronics):
+    def __init__(self, name, price,quantity,weight):
+        super().__init__(name, price, quantity, weight)
 
-    def price(self) -> Price:
-        return self._price
+    def clone(self) -> "Product":
+        return copy.deepcopy(self)
 
-    def quantity(self) -> Quantity:
-        return self._quantity
 
-    def weight(self) -> Weight:
-        return self._weight
+class TShirt(Clothing):
+    def __init__(self, name, price,quantity,weight):
+        super().__init__(name, price, quantity, weight)
+
+    def clone(self) -> "Product":
+        return copy.deepcopy(self)
+
+
+class Jacket(Clothing):
+    def __init__(self, name, price,quantity,weight):
+        super().__init__(name, price, quantity, weight)
+
+    def clone(self) -> "Product":
+        return copy.deepcopy(self)
+
+
+class Milk(Food):
+    def __init__(self, name, price,quantity,weight):
+        super().__init__(name, price, quantity, weight)
+
+    def clone(self) -> "Product":
+        return copy.deepcopy(self)
+
+
+class Bread(Food):
+    def __init__(self, name, price,quantity,weight):
+        super().__init__(name, price, quantity, weight)
 
     def clone(self) -> "Product":
         return copy.deepcopy(self)
