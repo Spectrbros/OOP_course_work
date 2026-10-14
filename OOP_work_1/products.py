@@ -53,16 +53,17 @@ class Weight:
 
 
 class Product(ABC):
-    _count = 0
+    _next_id = 0
 
     def __init__(self, name: str, category: str, price: int, quantity: int, weight: float):
-        self._id = Product._count + 1
-        Product._count += 1
+        Product._next_id += 1
+        self._id = Product._next_id
         self._name = name
         self._category = category
         self._price = Price(price)
         self._quantity = Quantity(quantity)
         self._weight = Weight(weight)
+        self._warehouse = # хранит свой склад для метода transfer_to
 
     @property
     def id(self) -> int:
@@ -91,6 +92,12 @@ class Product(ABC):
     @abstractmethod
     def clone(self) -> "Product":
         ...
+
+    def change_quantity(self, delta: int):
+        self._quantity.value += delta
+
+    def set_price(self, new_price: Price):
+        self._price = new_price
 
 
 class Electronics(Product, ABC):
