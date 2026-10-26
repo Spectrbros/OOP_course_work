@@ -34,6 +34,12 @@ class Quantity:
             raise ValueError("Quantity can't be negative")
         self._value = val
 
+    def change(self, delta: int):
+        new_value = self._value + delta
+        if new_value < 0:
+            raise ValueError(f"Quantity can't be negative: {self._value} + ({delta}) = {new_value}")
+        self._value = new_value
+
 
 class Weight:
     def __init__(self, val: float):
@@ -63,7 +69,20 @@ class Product(ABC):
         self._price = Price(price)
         self._quantity = Quantity(quantity)
         self._weight = Weight(weight)
-        self._warehouse = # хранит свой склад для метода transfer_to
+        self._warehouse = None
+
+    def __deepcopy__(self, memo):
+        cls = type(self)
+        result = cls.__new__(cls)
+        memo[id(self)] = result
+
+        for key, value in self.__dict__.items():
+            if key == "_warehouse":
+                setattr(result, key, None)
+            else:
+                setattr(result, key, copy.deepcopy(value, memo))
+
+        return result
 
     @property
     def id(self) -> int:
@@ -94,10 +113,21 @@ class Product(ABC):
         ...
 
     def change_quantity(self, delta: int):
-        self._quantity.value += delta
+        self._quantity.change(delta)
 
     def set_price(self, new_price: Price):
         self._price = new_price
+
+    def transfer_to(self, other: "Warehouse"):
+        if self._warehouse is other:
+            return
+        if other is None:
+            raise ValueError("Warehouse for transfer isn't specified")
+
+        other.add_product(self)
+
+        if self._warehouse is not None:
+            self._warehouse.remove_by_id(self._id)
 
 
 class Electronics(Product, ABC):
