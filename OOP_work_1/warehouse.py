@@ -14,78 +14,87 @@ class Warehouse:
         new = cls.__new__(cls)
         memo[id(self)] = new
         new._max_size = self._max_size
-        new._products = [p.clone() for p in self._products]
         new._current_size = self._current_size
+        new._products = [product.clone() for product in self._products]
+        for product in new._products:
+            product._warehouse = new
         return new
 
-# Конструкторы
-    # def clone(self):
-        # return copy.deepcopy(self)
-    @classmethod
-    def copy_constructor(cls, other: 'Warehouse') -> 'Warehouse':
-        new_warehouse = cls(other._max_size)
-        new_warehouse._products = [p.clone() for p in other._products]
-        for p in new_warehouse._products:
-            p._warehouse = new_warehouse
-        return new_warehouse
+    def __iter__(self):
+        return iter(self._products)
 
-    # 2. Оператор присваивания копированием (копирует данные в существующий склад)
-    def copy_assign(self, other: 'Warehouse'):
-        if self is other:
-            return
-        self._max_size = other._max_size
-        self._products = [p.clone() for p in other._products]
-        for p in self._products:
-            p._warehouse = self
+    def copy(self) -> 'Warehouse':
+        return copy.deepcopy(self)
 
-    # 3. Конструктор перемещения (забирает товары у старого склада без копирования)
-    @classmethod
-    def move_constructor(cls, other: 'Warehouse') -> 'Warehouse':
-        new_warehouse = cls(other._max_size)
-        new_warehouse._products = other._products
-        for p in new_warehouse._products:
-            p._warehouse = new_warehouse
-        other._products = []
-        return new_warehouse
+    def copy_from(self, other: 'Warehouse') -> None:
+        if other is self:
+            raise ValueError("Cannot copy warehouse into itself")
+        if other._current_size > self._max_size:
+            raise ValueError("Source warehouse exceeds this warehouse capacity")
 
-    # 4. Оператор присваивания перемещением (переносит товары в текущий склад)
-    def move_assign(self, other: 'Warehouse'):
-        if self is other:
-            return
-        self._max_size = other._max_size
+        new_products = [product.clone() for product in other._products]
+        for product in new_products:
+            product._warehouse = self
+
+        self._products = new_products
+        self._current_size = other._current_size
+
+    def move_from(self, other: 'Warehouse') -> None:
+        if other is self:
+            raise ValueError("Cannot move warehouse into itself")
+        if other._current_size > self._max_size:
+            raise ValueError("Source warehouse exceeds this warehouse capacity")
+
         self._products = other._products
-        for p in self._products:
-            p._warehouse = self
-        other._products = []
+        self._current_size = other._current_size
+        for product in self._products:
+            product._warehouse = self
 
-    # 5. Деструктор (формальный вызов при удалении объекта)
+        other._products = []
+        other._current_size = 0
+
+    @classmethod
+    def moved_from(cls, other: 'Warehouse') -> 'Warehouse':
+        new_warehouse = cls(other._max_size)
+        new_warehouse.move_from(other)
+        return new_warehouse
+
+    # 5. Деструктор (не нужен)
     def __del__(self):
         pass
 
 # Действия склада
+    @property
+    def size(self):
+        return  self._current_size
+
     def add_product(self, product: Product):
-        if len(self._products) >= self._max_size:
+        if self._current_size >= self._max_size:
             raise ValueError("Warehouse is full")
         self._products.append(product)
         product._warehouse = self
+        self._current_size += 1
 
     def remove_by_id(self, id: int) -> bool:
-        if id > Product._next_id:
+        if id > Product._next_id or id < 1:
             raise ValueError("Product ID doesn't exist")
-
         for index, product in enumerate(self._products):
             if product.id == id:
                 del self._products[index]
+                self._current_size -= 1
                 return True
         return False
 
     def remove_by_index(self, index: int):
         if 0 <= index < len(self._products):
             del self._products[index]
+            self._current_size -= 1
         else:
             raise IndexError("Index out of range")
 
     def find_by_id(self, id: int) -> Product:
+        if id < 1:
+            raise ValueError("Product ID doesn't exist")
         for product in self._products:
             if product.id == id:
                 return product

@@ -129,6 +129,16 @@ class Product(ABC):
         if self._warehouse is not None:
             self._warehouse.remove_by_id(self._id)
 
+    def info(self):
+        return (
+            f"ID: {self._id}\n"
+            f"Наименование товара: {self._name}\n"
+            f"Категория: {self._category}\n"
+            f"Цена (руб): {self._price.value}\n"
+            f"Количество (шт): {self._quantity.value}\n"
+            f"Вес (кг): {self._weight.value}\n"
+        )
+
 
 class Electronics(Product, ABC):
     def __init__(self, name, price, quantity, weight):
