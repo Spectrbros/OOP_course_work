@@ -65,8 +65,16 @@ class Warehouse:
 
 # Действия склада
     @property
-    def size(self):
+    def size(self) -> int:
         return  self._current_size
+
+    @property
+    def max_size(self) -> int:
+        return self._max_size
+
+    @property
+    def products(self) -> list:
+        return self._products
 
     def add_product(self, product: Product):
         if self._current_size >= self._max_size:

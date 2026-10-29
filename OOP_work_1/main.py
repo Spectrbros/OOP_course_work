@@ -35,6 +35,7 @@ if __name__ == "__main__":
 
             case 5:
                 print()
+                scenario_5()
 
             case _:
                 print("Такого сценария нет! Введите значение от 1 до 5!")

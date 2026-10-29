@@ -124,10 +124,9 @@ class Product(ABC):
         if other is None:
             raise ValueError("Warehouse for transfer isn't specified")
 
+        old_warehouse = self._warehouse
         other.add_product(self)
-
-        if self._warehouse is not None:
-            self._warehouse.remove_by_id(self._id)
+        old_warehouse.remove_by_id(self._id)
 
     def info(self):
         return (

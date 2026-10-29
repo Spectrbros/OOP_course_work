@@ -77,7 +77,7 @@ def scenario_1():
     main_warehouse.add_product(bread_factory.create_product("Хлеб Дарницкий традиционный 650 г", 52, 180, 0.65))
 
 
-    print(f"На склад DNS добавлено «{main_warehouse.size}» товаров")
+    print(f"На склад добавлено «{main_warehouse.size}» товаров")
     print("3) Вывод всех товаров через итератор:\n")
     for product in main_warehouse:
         print(product.info())
@@ -114,22 +114,22 @@ def scenario_3():
     print("1) Создаём склад и сохраняем его адреса")
     main_warehouse = get_ready_warehouse()
     ids_before = [id(product) for product in main_warehouse]
-    list_id_before = id(main_warehouse._products)
+    list_id_before = id(main_warehouse.products)
 
     print("2) Перемещаем склад и тоже сохраняем адреса")
-    new_warehouse = Warehouse(main_warehouse._max_size)
+    new_warehouse = Warehouse(main_warehouse.max_size)
     new_warehouse.move_from(main_warehouse)
     ids_after = [id(product) for product in new_warehouse]
-    list_id_after = id(new_warehouse._products)
+    list_id_after = id(new_warehouse.products)
 
     print("3) Сравниваем оба склада для проверки на перемещение:")
     print(f"\nПеремещение:\n"
           f"1. Список тот же? {{{list_id_before == list_id_after}}}\n"
           f"2. Товары те же? {{{ids_before == ids_after}}}\n"
-          f"3. Источник пуст? {{{main_warehouse._products == [] and main_warehouse._current_size == 0}}}"
+          f"3. Источник пуст? {{{main_warehouse.products == [] and main_warehouse.size == 0}}}"
           )
 
-    ok = (list_id_before == list_id_after and ids_before == ids_after and (main_warehouse._products == [] and main_warehouse._current_size == 0))
+    ok = (list_id_before == list_id_after and ids_before == ids_after and (len(main_warehouse.products) == 0 and main_warehouse.size == 0))
     print(f"Перемещение без копирования: {{{ok}}}")
 
 def scenario_4():
@@ -198,3 +198,39 @@ def scenario_4():
         main_warehouse.remove_by_index(59744)
     except IndexError:
         print("Результат | Выход за пределы массива!\n")
+
+def scenario_5():
+    print("=== Сценарий 5: перемещение товара между складами через TransferTo, изменение остатков и цены ===\n")
+
+    print("1) Создадим два склада: один с товарами, другой без товаров")
+    main_warehouse = get_ready_warehouse()
+    new_warehouse = Warehouse(30)
+    print("Cклады до переноса:")
+    print(f"Товаров на первом складе: {len(main_warehouse.products)}")
+    print(f"Товаров на втором складе: {len(new_warehouse.products)}")
+
+    print("\n2) Перенесём товары с ID: 1, 5, 9 на новый склад без товаров")
+    main_warehouse.find_by_id(1).transfer_to(new_warehouse)
+    main_warehouse.find_by_id(5).transfer_to(new_warehouse)
+    main_warehouse.find_by_id(9).transfer_to(new_warehouse)
+
+    print("Cклады после переноса:")
+    print(f"Товаров на первом складе: {len(main_warehouse.products)}")
+    print(f"Товаров на втором складе: {len(new_warehouse.products)}")
+    print("\nНовый склад после переноса:\n")
+    for product in new_warehouse:
+        print(product.info())
+
+    print("3) Изменим остаток для каждого товара на новом складе (уберём по 5 товаров)")
+    for product in new_warehouse:
+        product.change_quantity(-5)
+    print("\nСписок товаров после изменения:\n")
+    for product in new_warehouse:
+        print(product.info())
+
+    print("4) Установим всем товарам на новом складе цену «1»")
+    for product in new_warehouse:
+        product.set_price(Price(1))
+    print("\nСписок товаров после изменения:\n")
+    for product in new_warehouse:
+        print(product.info())
