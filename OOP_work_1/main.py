@@ -1,8 +1,11 @@
 from scenarios import *
-if __name__ == "__main__":
+from products import Product
+
+def main():
     is_need_exit = False
 
     while not is_need_exit:
+        Product._next_id = 0
         print("+++ Практическая работа №1: Введение в ООП: создание классов, конструкторов классов, методов классов; наследование +++")
         print("=" * 119)
         print("1) Сценарий 1: создание склада, добавление товаров и обход итератором")
@@ -12,32 +15,31 @@ if __name__ == "__main__":
         print("5) Сценарий 5: перемещение товара между складами через TransferTo, изменение остатков и цены")
         print("\n0) Выйти из программы")
         print("=" * 119)
-        user_choice = int(input("Введите команды: "))
+        user_choice = int(input("Введите номер команды: "))
 
-        match(user_choice):
+        match (user_choice):
             case 0:
                 is_need_exit = True
                 continue
             case 1:
                 print()
                 scenario_1()
-
             case 2:
                 print()
                 scenario_2()
-
             case 3:
                 print()
                 scenario_3()
             case 4:
                 print()
                 scenario_4()
-
             case 5:
                 print()
                 scenario_5()
-
             case _:
                 print("Такого сценария нет! Введите значение от 1 до 5!")
 
         input("Нажмите Enter для возвращения в меню")
+
+if __name__ == "__main__":
+    main()

@@ -1,9 +1,24 @@
 from products import Product, Price
 import copy
 
+class WarehouseIterator:
+    def __init__(self, products):
+        self._products = products
+        self._index = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self._index >= len(self._products):
+            raise StopIteration
+        product = self._products[self._index]
+        self._index += 1
+        return product
+
 class Warehouse:
     def __init__(self, max_size: int):
-        if max_size < 0:
+        if max_size <= 0:
             raise ValueError("Size can't be negative")
         self._products = []
         self._max_size = max_size
@@ -21,7 +36,7 @@ class Warehouse:
         return new
 
     def __iter__(self):
-        return iter(self._products)
+        return WarehouseIterator(self._products)
 
     def copy(self) -> 'Warehouse':
         return copy.deepcopy(self)
