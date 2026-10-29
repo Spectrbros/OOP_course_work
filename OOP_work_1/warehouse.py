@@ -74,11 +74,9 @@ class Warehouse:
         new_warehouse.move_from(other)
         return new_warehouse
 
-    # 5. Деструктор (не нужен)
     def __del__(self):
         pass
 
-# Действия склада
     @property
     def size(self) -> int:
         return  self._current_size
