@@ -1,5 +1,5 @@
 from delivery import Delivery
-from order import Order
+from order.order import Order
 
 class CourierDelivery(Delivery):
     def get_cost(self, order: Order):
