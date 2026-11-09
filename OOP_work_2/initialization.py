@@ -1,7 +1,7 @@
 from product.product_type import BaseWeight, BasePrice, ProductType
 
 
-def catalog_initialization():
+def catalog_initialization() -> None:
     ProductType.register_type("mug", BaseWeight(0.3), BasePrice("300"))
     ProductType.register_type("frying pan", BaseWeight(1.4), BasePrice("1600"))
     ProductType.register_type("pack of tea", BaseWeight(0.15), BasePrice("100"))

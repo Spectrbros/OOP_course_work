@@ -8,7 +8,7 @@ from delivery.delivery import Delivery
 class Order:
     _next_id = 1
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._id = Order._next_id
         Order._next_id += 1
         self._customer = 0
@@ -18,10 +18,10 @@ class Order:
         self._discounts = 0
         self._total_price = 0
 
-    def add_item(self, item: Product):
+    def add_item(self, item: Product) -> None:
         self._items.append(item)
 
-    def remove_item(self, id: int):
+    def remove_item(self, id: int) -> None:
         if id < 1:
             raise ValueError("Product ID doesn't exist")
         for index, item in enumerate(self._items):
@@ -42,7 +42,7 @@ class Order:
             total_price += item.total_price
         return total_price
 
-    def set_status(self, new_status: OrderStatus):
+    def set_status(self, new_status: OrderStatus) -> None:
         if not isinstance(new_status, OrderStatus):
             raise TypeError("The status must be set to OrderStatus")
         if new_status == self._status:
@@ -55,8 +55,11 @@ class Order:
     def get_items(self) -> tuple:
         return tuple(self._items)
 
-    def apply_discount(self, discount: Discount):
+    def apply_discount(self, discount: Discount) -> None:
+        discount.apply(self)
+
+    def set_delivery(self, delivery: Delivery) -> None:
         ...
 
-    def set_delivery(self, delivery: Delivery):
-        ...
+    def apply_percent_discount(self, percent: float):
+        self._total_price = self._total_price * ((100 - percent) / 100)

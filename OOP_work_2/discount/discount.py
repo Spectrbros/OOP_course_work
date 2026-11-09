@@ -9,5 +9,5 @@ if TYPE_CHECKING:
 
 class Discount(ABC):
     @abstractmethod
-    def apply(self, order: Order):
+    def apply(self, order: Order) -> None:
         ...

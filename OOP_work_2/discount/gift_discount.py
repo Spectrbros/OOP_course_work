@@ -8,5 +8,5 @@ if TYPE_CHECKING:
 
 
 class GiftDiscount(Discount):
-    def apply(self, order: Order):
+    def apply(self, order: Order) -> None:
         ...

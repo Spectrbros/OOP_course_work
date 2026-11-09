@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from decimal import Decimal
 from delivery.delivery import Delivery
 
 if TYPE_CHECKING:
@@ -8,10 +9,10 @@ if TYPE_CHECKING:
 
 
 class PickupDelivery(Delivery):
-    _BASE_COST = 0.0
+    _BASE_COST = Decimal("0")
     _TIME = "1-3 days"
 
-    def get_cost(self, order: Order):
+    def get_cost(self, order: Order) -> Decimal:
         return self._BASE_COST
 
     def get_estimated_time(self) -> str:

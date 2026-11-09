@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from decimal import Decimal
 from delivery.delivery import Delivery
 
 if TYPE_CHECKING:
@@ -8,15 +9,15 @@ if TYPE_CHECKING:
 
 
 class PostDelivery(Delivery):
-    _BASE_COST = 200.0
-    _COST_PER_KG = 30.0
+    _BASE_COST = Decimal("200")
+    _COST_PER_KG = Decimal("30")
     _FREE_KG = 5.0
     _MAX_WEIGHT = 10.0
     _TIME = "5-10 days"
 
-    def get_cost(self, order: Order):
+    def get_cost(self, order: Order) -> Decimal:
         order_weight = order.get_total_weight()
-        extra = max(0.0, order_weight - self._FREE_KG) * self._COST_PER_KG
+        extra = Decimal(str(max(0.0, order_weight - self._FREE_KG))) * self._COST_PER_KG
         return self._BASE_COST + extra
 
     def get_estimated_time(self) -> str:

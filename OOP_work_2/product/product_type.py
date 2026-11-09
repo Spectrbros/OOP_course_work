@@ -4,7 +4,7 @@ from decimal import Decimal
 
 
 class BaseWeight:
-    def __init__(self, value: float):
+    def __init__(self, value: float) -> None:
         if value <= 0:
             raise ValueError("Weight can't be negative or equal to zero.")
         self._value = value
@@ -15,7 +15,7 @@ class BaseWeight:
 
 
 class BasePrice:
-    def __init__(self, value: str):
+    def __init__(self, value: str) -> None:
         if Decimal(value) <= 0:
             raise ValueError("Price can't be negative or equal to zero.")
         self._value = Decimal(value)
@@ -29,7 +29,7 @@ class ProductType:
     _pool: dict[str, ProductType] = {}
     _catalog: dict[str, tuple[BaseWeight, BasePrice]] = {}
 
-    def __init__(self, category: str, base_weight: BaseWeight, base_price: BasePrice):
+    def __init__(self, category: str, base_weight: BaseWeight, base_price: BasePrice) -> None:
         self._category = category
         self._base_weight = base_weight
         self._base_price = base_price
@@ -44,15 +44,15 @@ class ProductType:
         return cls._pool[category]
 
     @classmethod
-    def register_type(cls, category: str, base_weight: BaseWeight, base_price: BasePrice):
+    def register_type(cls, category: str, base_weight: BaseWeight, base_price: BasePrice) -> None:
         if category in cls._pool:
             raise ValueError(f"Category «{category}» exists in the pool and can't be changed.")
         cls._catalog[category] = (base_weight, base_price)
 
     @property
-    def base_weight(self):
+    def base_weight(self) -> BaseWeight:
         return self._base_weight
 
     @property
-    def base_price(self):
+    def base_price(self) -> BasePrice:
         return self._base_price

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from decimal import Decimal
 from abc import ABC, abstractmethod
 
 if TYPE_CHECKING:
@@ -9,13 +10,13 @@ if TYPE_CHECKING:
 
 class Delivery(ABC):
     @abstractmethod
-    def get_cost(self, order: Order):
+    def get_cost(self, order: Order) -> Decimal:
         ...
 
     @abstractmethod
-    def get_estimated_time(self):
+    def get_estimated_time(self) -> str:
         ...
 
     @abstractmethod
-    def is_available(self, order: Order):
+    def is_available(self, order: Order) -> bool:
         ...

@@ -8,5 +8,8 @@ if TYPE_CHECKING:
 
 
 class PercentDiscount(Discount):
-    def apply(self, order: Order):
-        ...
+    def __init__(self):
+        self._percent = 10.0
+
+    def apply(self, order: Order) -> None:
+        order.apply_percent_discount(self._percent)
