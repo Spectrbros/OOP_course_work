@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from enum import Enum
+
 
 class OrderStatus(Enum):
     PENDING = "Pending"
@@ -15,5 +18,5 @@ class OrderStatus(Enum):
         CANCELLED: set()
     }
 
-    def can_transition_to(self, new_status: "OrderStatus") -> bool:
+    def can_transition_to(self, new_status: OrderStatus) -> bool:
         return new_status in self._TRANSITIONS[self]

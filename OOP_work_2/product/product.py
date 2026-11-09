@@ -1,6 +1,7 @@
 from decimal import Decimal
 from product_type import ProductType
 
+
 class Quantity:
     def __init__(self, value: int):
         if value <= 0:
@@ -16,6 +17,7 @@ class Quantity:
         if new_value < 0:
             raise ValueError(f"Quantity can't be negative: {self._value} + ({delta}) = {new_value}")
         self._value = new_value
+
 
 class CurrentPrice:
     def __init__(self, value: str):

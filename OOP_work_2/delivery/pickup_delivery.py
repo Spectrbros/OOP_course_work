@@ -1,12 +1,21 @@
-from delivery import Delivery
-from order import Order
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+from delivery.delivery import Delivery
+
+if TYPE_CHECKING:
+    from order.order import Order
+
 
 class PickupDelivery(Delivery):
+    _BASE_COST = 0.0
+    _TIME = "1-3 days"
+
     def get_cost(self, order: Order):
-        ...
+        return self._BASE_COST
 
-    def get_estimated_time(self):
-        ...
+    def get_estimated_time(self) -> str:
+        return self._TIME
 
-    def is_available(self, order: Order):
-        ...
+    def is_available(self, order: Order) -> bool:
+        return True

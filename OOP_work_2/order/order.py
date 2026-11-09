@@ -1,6 +1,9 @@
 from decimal import Decimal
 from order.order_status import OrderStatus
 from product.product import Product
+from discount.discount import Discount
+from delivery.delivery import Delivery
+
 
 class Order:
     _next_id = 1
@@ -51,3 +54,9 @@ class Order:
     # м.б. просто список возвращать, а не кортеж???
     def get_items(self) -> tuple:
         return tuple(self._items)
+
+    def apply_discount(self, discount: Discount):
+        ...
+
+    def set_delivery(self, delivery: Delivery):
+        ...

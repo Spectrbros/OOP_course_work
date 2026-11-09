@@ -1,5 +1,11 @@
-from delivery import Delivery
-from order import Order
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+from delivery.delivery import Delivery
+
+if TYPE_CHECKING:
+    from order.order import Order
+
 
 class DeliveryProxy(Delivery):
     def __init__(self):

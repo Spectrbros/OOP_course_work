@@ -1,5 +1,11 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 from abc import ABC, abstractmethod
-from order import Order
+
+if TYPE_CHECKING:
+    from order.order import Order
+
 
 class Discount(ABC):
     @abstractmethod

@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from decimal import Decimal
+
 
 class BaseWeight:
     def __init__(self, value: float):
@@ -23,7 +26,7 @@ class BasePrice:
 
 
 class ProductType:
-    _pool: dict[str, "ProductType"] = {}
+    _pool: dict[str, ProductType] = {}
     _catalog: dict[str, tuple[BaseWeight, BasePrice]] = {}
 
     def __init__(self, category: str, base_weight: BaseWeight, base_price: BasePrice):
@@ -32,7 +35,7 @@ class ProductType:
         self._base_price = base_price
 
     @classmethod
-    def get_type(cls, category: str) -> "ProductType":
+    def get_type(cls, category: str) -> ProductType:
         if category not in cls._catalog:
             raise ValueError(f"Unknown product category: {category}")
         if category not in cls._pool:

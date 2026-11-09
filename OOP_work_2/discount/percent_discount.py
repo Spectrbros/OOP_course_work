@@ -1,5 +1,11 @@
-from discount import Discount
-from order import Order
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+from discount.discount import Discount
+
+if TYPE_CHECKING:
+    from order.order import Order
+
 
 class PercentDiscount(Discount):
     def apply(self, order: Order):
