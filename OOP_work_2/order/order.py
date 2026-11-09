@@ -1,4 +1,5 @@
 from decimal import Decimal
+from order.order_status import OrderStatus
 from product.product import Product
 
 class Order:
@@ -9,7 +10,7 @@ class Order:
         Order._next_id += 1
         self._customer = 0
         self._items = []
-        self._status = 0
+        self._status = OrderStatus.PENDING
         self._delivery = 0
         self._discounts = 0
         self._total_price = 0
@@ -38,8 +39,15 @@ class Order:
             total_price += item.total_price
         return total_price
 
-    def set_status(self, status: str):
-        if status in {"pending", "paid", "shipped", "delivered", "cancelled"}:
-            self._status = status
-        else:
-            raise ValueError("Invalid status name")
+    def set_status(self, new_status: OrderStatus):
+        if not isinstance(new_status, OrderStatus):
+            raise TypeError("The status must be set to OrderStatus")
+        if new_status == self._status:
+            return
+        if not self._status.can_transition_to(new_status):
+            raise ValueError(f"Invalid status transition: {self._status.value} -> {new_status.value}")
+        self._status = new_status
+
+    # м.б. просто список возвращать, а не кортеж???
+    def get_items(self) -> tuple:
+        return tuple(self._items)
