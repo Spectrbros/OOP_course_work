@@ -1,7 +1,7 @@
 class OrderManager:
     def __init__(self):
-        self._orders = 0
-        self._customers = 0
+        self._orders: dict[int, tuple] = {}
+        self._customers = set()
         self._turnover = 0
         self._max_active_orders = 0
 

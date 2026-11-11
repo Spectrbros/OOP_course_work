@@ -5,7 +5,7 @@ from product_type import ProductType
 class Quantity:
     def __init__(self, value: int) -> None:
         if value <= 0:
-            raise ValueError("Quantity can't be negative or equal to zero.")
+            raise ValueError("Quantity can't be negative or equal to zero")
         self._value = value
 
     @property
@@ -22,7 +22,7 @@ class Quantity:
 class CurrentPrice:
     def __init__(self, value: str) -> None:
         if Decimal(value) <= 0:
-            raise ValueError("Price can't be negative or equal to zero.")
+            raise ValueError("Price can't be negative or equal to zero")
         self._value = Decimal(value)
 
     @property
@@ -46,7 +46,7 @@ class Product:
 
     @property
     def weight(self) -> float:
-        return self._type.base_weight * self._quantity.value
+        return self._type.base_weight.value * self._quantity.value
 
     @property
     def total_price(self) -> Decimal:

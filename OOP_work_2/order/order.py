@@ -3,20 +3,21 @@ from order.order_status import OrderStatus
 from product.product import Product
 from discount.discount import Discount
 from delivery.delivery import Delivery
+from customer.customer import Customer
 
 
 class Order:
     _next_id = 1
 
-    def __init__(self) -> None:
+    def __init__(self, customer: Customer, items: list[Product]) -> None:
         self._id = Order._next_id
         Order._next_id += 1
-        self._customer = 0
-        self._items = []
+        self._customer = customer
+        self._items = items
         self._status = OrderStatus.PENDING
-        self._delivery = 0
-        self._discounts = 0
-        self._total_price = 0
+        self._delivery = None
+        self._discounts = []
+        self._total_price = Decimal("0")
 
     def add_item(self, item: Product) -> None:
         self._items.append(item)
@@ -40,7 +41,7 @@ class Order:
         total_price = Decimal("0")
         for item in self._items:
             total_price += item.total_price
-        return total_price
+        return total_price + self._delivery.get_cost()
 
     def set_status(self, new_status: OrderStatus) -> None:
         if not isinstance(new_status, OrderStatus):
@@ -55,11 +56,17 @@ class Order:
     def get_items(self) -> tuple:
         return tuple(self._items)
 
+    def set_delivery(self, delivery: Delivery) -> None:
+        self._delivery = delivery
+
     def apply_discount(self, discount: Discount) -> None:
         discount.apply(self)
 
-    def set_delivery(self, delivery: Delivery) -> None:
-        ...
-
-    def apply_percent_discount(self, percent: float):
+    def apply_percent_discount(self, percent: Decimal) -> None:
         self._total_price = self._total_price * ((100 - percent) / 100)
+
+    def apply_cashback_discount(self, cashback: Decimal) -> None:
+        self._customer.add_cashback(self._total_price * (cashback / 100))
+
+    def apply_free_delivery_discount(self) -> None:
+        self._
