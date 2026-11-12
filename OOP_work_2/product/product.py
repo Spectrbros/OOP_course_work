@@ -36,7 +36,7 @@ class Product:
     def __init__(self, category: str, quantity: Quantity, current_price: CurrentPrice) -> None:
         self._id = Product._next_id
         Product._next_id += 1
-        self._quantity = quantity # количество товара в ЗАКАЗЕ (НЕ НА СКЛАДЕ)
+        self._quantity = quantity
         self._current_price = current_price
         self._type = ProductType.get_type(category)
 

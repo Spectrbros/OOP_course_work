@@ -9,10 +9,11 @@ if TYPE_CHECKING:
 
 
 class CashbackDiscount(Discount):
-    def __init__(self, percent: float):
+    def __init__(self, percent: str):
+        percent = Decimal(percent)
         if percent <= 0:
             raise ValueError("Cashback discount percent can't be negative or equal to zero")
-        self._cashback_percent = Decimal(str(percent))
+        self._cashback_percent = percent
 
     def apply(self, order: Order) -> None:
         order.apply_cashback_discount(self._cashback_percent)

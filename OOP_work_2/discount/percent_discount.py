@@ -9,10 +9,11 @@ if TYPE_CHECKING:
 
 
 class PercentDiscount(Discount):
-    def __init__(self, percent: float):
+    def __init__(self, percent: str):
+        percent = Decimal(percent)
         if percent <= 0:
             raise ValueError("Percent discount can't be negative or equal to zero")
-        self._percent = Decimal(str(percent))
+        self._percent = percent
 
     def apply(self, order: Order) -> None:
         order.apply_percent_discount(self._percent)

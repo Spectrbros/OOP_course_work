@@ -9,4 +9,4 @@ if TYPE_CHECKING:
 
 class FreeDeliveryDiscount(Discount):
     def apply(self, order: Order) -> None:
-        order.
+        order.apply_free_delivery_discount()
