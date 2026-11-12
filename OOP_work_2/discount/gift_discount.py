@@ -12,6 +12,10 @@ if TYPE_CHECKING:
 class GiftDiscount(Discount):
     _gifts = ("mug", "book", "headphones")
 
+    @property
+    def name(self):
+        return "Free gift"
+
     def apply(self, order: Order) -> None:
         gift = Product(random.choice(self._gifts), Quantity(1), CurrentPrice("0"))
         order.apply_gift_discount(gift)

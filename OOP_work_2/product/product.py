@@ -56,5 +56,9 @@ class Product:
     def quantity(self) -> int:
         return self._quantity.value
 
+    @property
+    def type(self):
+        return self._type
+
     def change_quantity(self, delta: int) -> None:
         self._quantity.change(delta)

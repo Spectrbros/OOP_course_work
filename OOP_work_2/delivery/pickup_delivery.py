@@ -12,6 +12,10 @@ class PickupDelivery(Delivery):
     _BASE_COST = Decimal("0")
     _TIME = "1-3 days"
 
+    @property
+    def name(self):
+        return "Pickup"
+
     def get_cost(self, order: Order) -> Decimal:
         return self._BASE_COST
 

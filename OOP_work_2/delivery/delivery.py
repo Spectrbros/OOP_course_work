@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from decimal import Decimal
 from abc import ABC, abstractmethod
-from order.order import Order
 
 if TYPE_CHECKING:
     from order.order import Order

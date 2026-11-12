@@ -8,5 +8,9 @@ if TYPE_CHECKING:
 
 
 class FreeDeliveryDiscount(Discount):
+    @property
+    def name(self):
+        return "Free delivery"
+
     def apply(self, order: Order) -> None:
         order.apply_free_delivery_discount()

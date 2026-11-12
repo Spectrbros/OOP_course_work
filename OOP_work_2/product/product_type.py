@@ -50,6 +50,10 @@ class ProductType:
         cls._catalog[category] = (base_weight, base_price)
 
     @property
+    def category(self):
+        return self._category
+
+    @property
     def base_weight(self) -> BaseWeight:
         return self._base_weight
 

@@ -15,8 +15,12 @@ class CourierDelivery(Delivery):
     _MAX_WEIGHT = 20.0
     _TIME = "1-2 days"
 
+    @property
+    def name(self):
+        return "Courier"
+
     def get_cost(self, order: Order) -> Decimal:
-        order_weight = order.get_total_weight()
+        order_weight = order.total_weight
         extra = Decimal(str(max(0.0, order_weight - self._FREE_KG))) * self._COST_PER_KG
         return self._BASE_COST + extra
 
@@ -24,4 +28,4 @@ class CourierDelivery(Delivery):
         return self._TIME
 
     def is_available(self, order: Order) -> bool:
-        return order.get_total_weight() <= self._MAX_WEIGHT
+        return order.total_weight <= self._MAX_WEIGHT
