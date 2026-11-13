@@ -109,11 +109,14 @@ class Order:
         self.update_total_price()
 
     def apply_discount(self, discount: Discount) -> None:
+        if any(isinstance(i, type(discount)) for i in self._discounts):
+            raise ValueError("An order can't have more than one discount of the same type.")
+        self._discounts.append(discount)
         discount.apply(self)
         self.update_total_price()
 
     def update_total_price(self) -> None:
-        self._total_price = self.get_total_price()
+        self._total_price = self.total_price
 
     def apply_percent_discount(self, percent: Decimal) -> None:
         self._total_price = self._total_price * ((100 - percent) / 100)
