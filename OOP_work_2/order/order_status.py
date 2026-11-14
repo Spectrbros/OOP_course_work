@@ -20,3 +20,6 @@ class OrderStatus(Enum):
 
     def can_transition_to(self, new_status: OrderStatus) -> bool:
         return new_status in self._TRANSITIONS[self]
+
+    def is_active(self) -> bool:
+        return self in (OrderStatus.PENDING, OrderStatus.PAID, OrderStatus.SHIPPED)

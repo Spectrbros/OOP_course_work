@@ -1,5 +1,6 @@
 from decimal import Decimal
-from product_type import ProductType
+
+from product.product_type import ProductType
 
 
 class Quantity:

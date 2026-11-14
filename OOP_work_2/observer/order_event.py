@@ -1,6 +1,12 @@
+from dataclasses import dataclass
+from datetime import datetime
+
+from order.order_status import OrderStatus
+
+
+@dataclass(frozen=True)
 class OrderEvent:
-    def __init__(self) -> None:
-        self._order_id = 0
-        self._old_status = 0
-        self._new_status = 0
-        self._time_stamp = 0
+    order_id: int
+    old_status: OrderStatus
+    new_status: OrderStatus
+    timestamp: datetime

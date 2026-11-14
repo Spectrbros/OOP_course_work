@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+import random
+
 from discount.discount import Discount
 from product.product import Product, Quantity, CurrentPrice
-import random
+
 
 if TYPE_CHECKING:
     from order.order import Order
