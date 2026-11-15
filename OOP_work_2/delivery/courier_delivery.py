@@ -18,7 +18,7 @@ class CourierDelivery(Delivery):
     _SUPPORTED_REGIONS = {"Moscow", "Saint Petersburg"}
 
     @property
-    def name(self):
+    def name(self) -> str:
         return "Courier"
 
     def get_cost(self, order: Order) -> Decimal:

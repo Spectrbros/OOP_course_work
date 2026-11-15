@@ -9,12 +9,16 @@ from product.product import Product
 from discount.discount import Discount
 from delivery.delivery import Delivery
 from customer.customer import Customer
+from logging.logger import Logger
+from logging.logging_source import LoggingSource
 
 
 class Order(IObservable):
     _next_id = 1
 
     def __init__(self, customer: Customer, region: str) -> None:
+        if region == "":
+            raise ValueError("")
         self._id = Order._next_id
         Order._next_id += 1
         self._customer = customer
@@ -27,15 +31,16 @@ class Order(IObservable):
         self._total_price = Decimal("0")
         self._observers = []
         self._created_at = datetime.now()
+        self._logger = Logger()
 
-    def __add__(self, discount: Discount):
+    def __add__(self, discount: Discount) -> "Order":
         self.apply_discount(discount)
         return self
 
     def __str__(self) -> str:
         order_id = self._id
         order_status = self._status
-        customer_name = self._customer.name
+        customer_id = self._customer.id
         order_items = ", ".join([f"{i.type.category} x {i.quantity}" for i in self._items])
         order_delivery = self._delivery.name if self._delivery is not None else "Not assigned"
         order_delivery_cost = self.delivery_cost
@@ -43,14 +48,14 @@ class Order(IObservable):
         order_discounts = ", ".join([f"{i.name}" for i in self._discounts])
         total_price = self._total_price
 
-        info = (f"Order ID: {order_id}\n"
-                f"Status: {order_status}\n"
-                f"Customer: {customer_name}\n"
-                f"Items: {order_items}\n"
-                f"Delivery: {order_delivery} | {order_delivery_cost:.2f} ₽\n"
-                f"Free delivery: {free_delivery}\n"
-                f"Discounts: {order_discounts}\n"
-                f"Total price: {total_price}\n")
+        info = (f"Order ID: {order_id} | "
+                f"Status: {order_status} | "
+                f"Customer: {customer_id} | "
+                f"Items: {order_items} | "
+                f"Delivery: {order_delivery} ({order_delivery_cost:.2f} ₽) | "
+                f"Free delivery: {free_delivery} | "
+                f"Discounts: {order_discounts} | "
+                f"Total price: {total_price}")
 
         return info
 
@@ -64,7 +69,7 @@ class Order(IObservable):
 
     @property
     def region(self):
-        return region
+        return self._region
 
     @property
     def delivery_cost(self) -> Decimal:
@@ -113,12 +118,14 @@ class Order(IObservable):
             raise ValueError(f"Invalid status transition: {self._status.value} -> {new_status.value}")
         old_status = self._status
         self._status = new_status
+        self._logger.log(LoggingSource.ORDER,f"Order #{self._id}: status {old_status.value} -> {new_status.value}")
         event = OrderEvent(self._id, old_status, new_status, datetime.now())
         self.notify(event)
 
     def add_item(self, item: Product) -> None:
         self._items.append(item)
         self.update_total_price()
+        self._logger.log(LoggingSource.ORDER,f"Item added to order #{self._id}: {item.type.category} x{item.quantity}")
 
     def remove_item(self, id: int) -> None:
         if id < 1:
@@ -127,6 +134,7 @@ class Order(IObservable):
             if item.id == id:
                 del self._items[index]
                 self.update_total_price()
+                self._logger.log(LoggingSource.ORDER,f"Item #{id} has been removed from order #{self._id}")
                 return
         raise ValueError("There is no product with this ID in the order.")
 
@@ -136,6 +144,7 @@ class Order(IObservable):
     def set_delivery(self, delivery: Delivery) -> None:
         self._delivery = delivery
         self.update_total_price()
+        self._logger.log(LoggingSource.ORDER,f"Delivery assigned to order #{self._id}: {delivery.name}")
 
     def apply_discount(self, discount: Discount) -> None:
         if any(isinstance(i, type(discount)) for i in self._discounts):
@@ -143,12 +152,13 @@ class Order(IObservable):
         self._discounts.append(discount)
         discount.apply(self)
         self.update_total_price()
+        self._logger.log(LoggingSource.ORDER, f"A discount has been applied to order #{self._id}: {discount.name}")
 
-    def apply_percent_discount(self, percent: Decimal) -> None:
-        self._total_price = self._total_price * ((100 - percent) / 100)
+    def apply_percent_discount(self, amount: Decimal) -> None:
+        self._total_price -= amount
 
-    def apply_cashback_discount(self, cashback: Decimal) -> None:
-        self._customer.add_cashback(self._total_price * (cashback / 100))
+    def apply_cashback_discount(self, amount: Decimal) -> None:
+        self._customer.add_cashback(amount)
 
     def apply_free_delivery_discount(self) -> None:
         self._free_delivery = True

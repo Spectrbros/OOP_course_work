@@ -4,6 +4,9 @@ from typing import TYPE_CHECKING
 from decimal import Decimal
 from abc import ABC, abstractmethod
 
+from logging.logger import Logger
+from logging.logging_source import LoggingSource
+
 if TYPE_CHECKING:
     from order.order import Order
 
@@ -11,6 +14,7 @@ if TYPE_CHECKING:
 class Delivery(ABC):
     def __lshift__(self, order: Order):
         order.set_delivery(self)
+        Logger().log(LoggingSource.DELIVERY,f"Delivery «{self.name}» assigned to order #{order.id}")
         return order
 
     @property

@@ -41,6 +41,9 @@ class Product:
         self._current_price = current_price
         self._type = ProductType.get_type(category)
 
+    def __str__(self) -> str:
+        return f"{self._type.category} x{self._quantity.value} | {self.total_price:.2f} rub."
+
     @property
     def id(self) -> int:
         return self._id

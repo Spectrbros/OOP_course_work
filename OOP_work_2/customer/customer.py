@@ -20,11 +20,11 @@ class Customer:
         self._cashback_amount = Decimal("0")
 
     @property
-    def id(self):
+    def id(self) -> int:
         return self._id
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     def add_cashback(self, amount: Decimal) -> None:

@@ -8,6 +8,10 @@ if TYPE_CHECKING:
 
 
 class Discount(ABC):
+    @property
+    def name(self) -> str:
+        ...
+
     @abstractmethod
     def apply(self, order: Order) -> None:
         ...
