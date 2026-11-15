@@ -14,10 +14,11 @@ from customer.customer import Customer
 class Order(IObservable):
     _next_id = 1
 
-    def __init__(self, customer: Customer) -> None:
+    def __init__(self, customer: Customer, region: str) -> None:
         self._id = Order._next_id
         Order._next_id += 1
         self._customer = customer
+        self._region = region
         self._items = []
         self._status = OrderStatus.PENDING
         self._delivery = None
@@ -60,6 +61,10 @@ class Order(IObservable):
     @property
     def customer(self) -> Customer:
         return self._customer
+
+    @property
+    def region(self):
+        return region
 
     @property
     def delivery_cost(self) -> Decimal:

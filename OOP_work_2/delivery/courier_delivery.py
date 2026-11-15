@@ -15,6 +15,7 @@ class CourierDelivery(Delivery):
     _FREE_KG = 10.0
     _MAX_WEIGHT = 20.0
     _TIME = "1-2 days"
+    _SUPPORTED_REGIONS = {"Moscow", "Saint Petersburg"}
 
     @property
     def name(self):
@@ -25,8 +26,8 @@ class CourierDelivery(Delivery):
         extra = Decimal(str(max(0.0, order_weight - self._FREE_KG))) * self._COST_PER_KG
         return self._BASE_COST + extra
 
-    def get_estimated_time(self) -> str:
+    def get_estimated_time(self, order: Order) -> str:
         return self._TIME
 
     def is_available(self, order: Order) -> bool:
-        return order.total_weight <= self._MAX_WEIGHT
+        return order.total_weight <= self._MAX_WEIGHT and order.region in self._SUPPORTED_REGIONS

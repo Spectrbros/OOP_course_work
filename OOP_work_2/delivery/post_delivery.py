@@ -25,7 +25,7 @@ class PostDelivery(Delivery):
         extra = Decimal(str(max(0.0, order_weight - self._FREE_KG))) * self._COST_PER_KG
         return self._BASE_COST + extra
 
-    def get_estimated_time(self) -> str:
+    def get_estimated_time(self, order: Order) -> str:
         return self._TIME
 
     def is_available(self, order: Order) -> bool:

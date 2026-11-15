@@ -13,12 +13,17 @@ class Delivery(ABC):
         order.set_delivery(self)
         return order
 
+    @property
+    @abstractmethod
+    def name(self):
+        ...
+
     @abstractmethod
     def get_cost(self, order: Order) -> Decimal:
         ...
 
     @abstractmethod
-    def get_estimated_time(self) -> str:
+    def get_estimated_time(self, order: Order) -> str:
         ...
 
     @abstractmethod

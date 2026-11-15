@@ -20,7 +20,7 @@ class PickupDelivery(Delivery):
     def get_cost(self, order: Order) -> Decimal:
         return self._BASE_COST
 
-    def get_estimated_time(self) -> str:
+    def get_estimated_time(self, order: Order) -> str:
         return self._TIME
 
     def is_available(self, order: Order) -> bool:
