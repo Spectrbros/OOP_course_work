@@ -56,7 +56,7 @@ class DeliveryProxy(Delivery):
         self._logger.log(LoggingSource.DELIVERY,f"Cost calculation for «{chosen_delivery.name}»: {cost:.2f} RUB")
         return cost
 
-    def get_estimated_time(self, order: Order) -> str:
+    def get_estimated_time(self, order: Order | None) -> str:
         self.choose_delivery(order)
         chosen_delivery = self._chosen_delivery
         if chosen_delivery is None:

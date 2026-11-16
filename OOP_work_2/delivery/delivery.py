@@ -13,6 +13,9 @@ if TYPE_CHECKING:
 
 class Delivery(ABC):
     def __lshift__(self, order: Order):
+        from order.order import Order
+        if not isinstance(order, Order):
+            return NotImplemented
         order.set_delivery(self)
         Logger().log(LoggingSource.DELIVERY,f"Delivery «{self.name}» assigned to order #{order.id}")
         return order
@@ -27,7 +30,7 @@ class Delivery(ABC):
         ...
 
     @abstractmethod
-    def get_estimated_time(self, order: Order) -> str:
+    def get_estimated_time(self, order: Order | None) -> str:
         ...
 
     @abstractmethod

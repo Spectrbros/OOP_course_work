@@ -34,7 +34,15 @@ class Order(IObservable):
         self._logger = Logger()
 
     def __add__(self, discount: Discount) -> "Order":
+        if not isinstance(discount, Discount):
+            return NotImplemented
         self.apply_discount(discount)
+        return self
+
+    def __sub__(self, item:Product):
+        if not isinstance(item, Product):
+            return NotImplemented
+        self.remove_item(item.id)
         return self
 
     def __str__(self) -> str:
@@ -60,6 +68,18 @@ class Order(IObservable):
                 f"Total price: {total_price}")
 
         return info
+
+    def clone(self) -> "Order":
+        clone = Order(self._customer, self._region)
+        for item in self._items:
+            clone.add_item(item.clone())
+        clone._status = self._status
+        clone._delivery = self._delivery
+        clone._free_delivery = self._free_delivery
+        clone._discounts = list(self._discounts)
+        clone._discount_amount = self._discount_amount
+        clone.update_total_price()
+        return clone
 
     @property
     def id(self) -> int:

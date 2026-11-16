@@ -48,6 +48,9 @@ class Product:
     def __str__(self) -> str:
         return f"{self._type.category} x{self._quantity.value} | {self.total_price:.2f} RUB"
 
+    def clone(self) -> "Product":
+        return Product(self._type.category, Quantity(self._quantity.value), CurrentPrice(str(self._current_price.value)))
+
     @classmethod
     def from_category(cls, category: ProductCategory, quantity: int, price: str | None = None) -> "Product":
         catalog_initialization()

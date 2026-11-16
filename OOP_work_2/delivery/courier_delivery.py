@@ -32,7 +32,7 @@ class CourierDelivery(Delivery):
         extra = max(Decimal("0"), order_weight - self._FREE_KG) * self._COST_PER_KG
         return self._BASE_COST + extra
 
-    def get_estimated_time(self, order: Order) -> str:
+    def get_estimated_time(self, order: Order | None) -> str:
         return self._TIME
 
     def is_available(self, order: Order) -> bool:
