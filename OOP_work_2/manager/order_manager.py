@@ -6,6 +6,7 @@ from customer.customer import Customer
 from product.product import Product
 from order.order import Order
 from order.order_status import OrderStatus
+from delivery.delivery_region import DeliveryRegion
 from logging.logger import Logger
 from logging.logging_source import LoggingSource
 
@@ -48,7 +49,7 @@ class OrderManager(IObserver):
             f"customers: {self.customer_count}",
         )
 
-    def create_order(self, customer: Customer, region: str, items: list[Product]) -> Order:
+    def create_order(self, customer: Customer, region: DeliveryRegion, items: list[Product]) -> Order:
         if self._active_orders_count >= self._MAX_ACTIVE_ORDERS:
             self._logger.log(LoggingSource.MANAGER,f"Order creation rejected: the manager limit of active orders has been reached")
             raise ValueError("Manager has the maximum number of active orders")

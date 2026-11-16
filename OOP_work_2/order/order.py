@@ -45,6 +45,7 @@ class Order(IObservable):
         order_delivery = self._delivery.name if self._delivery is not None else "Not assigned"
         order_delivery_cost = self.delivery_cost
         free_delivery = str(self._free_delivery)
+        delivery_region = self._region.value
         order_discounts = ", ".join([f"{i.name}" for i in self._discounts])
         total_price = self.total_price
 
@@ -54,6 +55,7 @@ class Order(IObservable):
                 f"Items: {order_items} | "
                 f"Delivery: {order_delivery} ({order_delivery_cost:.2f} rub.) | "
                 f"Free delivery: {free_delivery} | "
+                f"Delivery region: {delivery_region} | "
                 f"Discounts: {order_discounts} | "
                 f"Total price: {total_price}")
 
@@ -68,7 +70,7 @@ class Order(IObservable):
         return self._customer
 
     @property
-    def region(self):
+    def region(self) -> DeliveryRegion:
         return self._region
 
     @property
