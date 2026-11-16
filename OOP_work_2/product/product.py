@@ -22,8 +22,8 @@ class Quantity:
 
 class CurrentPrice:
     def __init__(self, value: str) -> None:
-        if Decimal(value) <= 0:
-            raise ValueError("Price can't be negative or equal to zero")
+        if Decimal(value) < 0:
+            raise ValueError("Price can't be negative")
         self._value = Decimal(value)
 
     @property

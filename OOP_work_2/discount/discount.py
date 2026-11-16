@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 
 class Discount(ABC):
     @property
+    @abstractmethod
     def name(self) -> str:
         ...
 

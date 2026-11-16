@@ -49,7 +49,7 @@ class DeliveryProxy(Delivery):
             )
         key = (order.id, order.region, order.total_weight, chosen_delivery.name)
         if key in self._cost_cache:
-            self._logger.log(LoggingSource.DELIVERY,f"Cost from cache: {self._cache[key]:.2f} rub.")
+            self._logger.log(LoggingSource.DELIVERY,f"Cost from cache: {self._cost_cache[key]:.2f} rub.")
             return self._cost_cache[key]
         cost = chosen_delivery.get_cost(order)
         self._cost_cache[key] = cost

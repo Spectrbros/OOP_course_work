@@ -18,7 +18,7 @@ class Order(IObservable):
 
     def __init__(self, customer: Customer, region: str) -> None:
         if region == "":
-            raise ValueError("")
+            raise ValueError("Delivery region for the order can't be empty")
         self._id = Order._next_id
         Order._next_id += 1
         self._customer = customer
@@ -28,6 +28,7 @@ class Order(IObservable):
         self._delivery = None
         self._free_delivery = False
         self._discounts = []
+        self._discount_amount = Decimal("0")
         self._total_price = Decimal("0")
         self._observers = []
         self._created_at = datetime.now()
@@ -46,13 +47,13 @@ class Order(IObservable):
         order_delivery_cost = self.delivery_cost
         free_delivery = str(self._free_delivery)
         order_discounts = ", ".join([f"{i.name}" for i in self._discounts])
-        total_price = self._total_price
+        total_price = self.total_price
 
         info = (f"Order ID: {order_id} | "
                 f"Status: {order_status} | "
                 f"Customer: {customer_id} | "
                 f"Items: {order_items} | "
-                f"Delivery: {order_delivery} ({order_delivery_cost:.2f} ₽) | "
+                f"Delivery: {order_delivery} ({order_delivery_cost:.2f} rub.) | "
                 f"Free delivery: {free_delivery} | "
                 f"Discounts: {order_discounts} | "
                 f"Total price: {total_price}")
@@ -73,10 +74,9 @@ class Order(IObservable):
 
     @property
     def delivery_cost(self) -> Decimal:
-        if self._free_delivery:
+        if self._free_delivery or self._delivery is None:
             return Decimal("0")
-        delivery_cost = self._delivery.get_cost(self)
-        return delivery_cost
+        return self._delivery.get_cost(self)
 
     @property
     def total_weight(self) -> float:
@@ -87,15 +87,16 @@ class Order(IObservable):
 
     @property
     def total_price(self) -> Decimal:
+        return self._total_price
+
+    def update_total_price(self) -> None:
         total_price = Decimal("0")
         for item in self._items:
             total_price += item.total_price
         if not self._free_delivery and self._delivery is not None:
             total_price += self.delivery_cost
-        return total_price
-
-    def update_total_price(self) -> None:
-        self._total_price = self.total_price
+        total_price -= self._discount_amount
+        self._total_price = total_price
 
     def subscribe(self, observer: IObserver) -> None:
         if observer not in self._observers:
@@ -155,7 +156,7 @@ class Order(IObservable):
         self._logger.log(LoggingSource.ORDER, f"A discount has been applied to order #{self._id}: {discount.name}")
 
     def apply_percent_discount(self, amount: Decimal) -> None:
-        self._total_price -= amount
+        self._discount_amount += amount
 
     def apply_cashback_discount(self, amount: Decimal) -> None:
         self._customer.add_cashback(amount)

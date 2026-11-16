@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 class PostDelivery(Delivery):
     _BASE_COST = Decimal("200")
     _COST_PER_KG = Decimal("30")
-    _FREE_KG = 5.0
+    _FREE_KG = Decimal("5")
     _MAX_WEIGHT = 10.0
     _TIME = "5-10 days"
 
@@ -21,8 +21,8 @@ class PostDelivery(Delivery):
         return "Post"
 
     def get_cost(self, order: Order) -> Decimal:
-        order_weight = order.total_weight
-        extra = Decimal(str(max(0.0, order_weight - self._FREE_KG))) * self._COST_PER_KG
+        order_weight = Decimal(str(order.total_weight))
+        extra = max(Decimal("0"), order_weight - self._FREE_KG) * self._COST_PER_KG
         return self._BASE_COST + extra
 
     def get_estimated_time(self, order: Order) -> str:

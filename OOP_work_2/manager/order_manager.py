@@ -27,10 +27,10 @@ class OrderManager(IObserver):
 
     def on_order_event(self, event: OrderEvent) -> None:
         order = self.get_order(event.order_id)
-        if OrderEvent.new_status is OrderStatus.PAID:
+        if event.new_status is OrderStatus.PAID:
             self._turnover += order.total_price
-        if (OrderEvent.old_status is OrderStatus.PAID and
-            OrderEvent.new_status is OrderStatus.CANCELLED
+        if (event.old_status is OrderStatus.PAID and
+            event.new_status is OrderStatus.CANCELLED
         ):
             self._turnover -= order.total_price
         if (event.old_status.is_active() and not
@@ -48,11 +48,11 @@ class OrderManager(IObserver):
             f"customers: {self.customer_count}",
         )
 
-    def create_order(self, customer: Customer, region: str, items: list[Product]) -> None:
-        if self._active_orders_count == self._MAX_ACTIVE_ORDERS:
+    def create_order(self, customer: Customer, region: str, items: list[Product]) -> Order:
+        if self._active_orders_count >= self._MAX_ACTIVE_ORDERS:
             self._logger.log(LoggingSource.MANAGER,f"Order creation rejected: the manager limit of active orders has been reached")
             raise ValueError("Manager has the maximum number of active orders")
-        if customer.id in self._customers and self.get_customer_active_orders_count(customer) > self._CUSTOMER_MAX_ACTIVE_ORDERS:
+        if customer.id in self._customers and self.get_customer_active_orders_count(customer) >= self._CUSTOMER_MAX_ACTIVE_ORDERS:
             self._logger.log(LoggingSource.MANAGER,f"Order creation for customer #{customer.id} rejected: the limit of {self._CUSTOMER_MAX_ACTIVE_ORDERS} active orders has been reached")
             raise ValueError("Customer has the maximum number of active orders")
         if len(items) == 0:
@@ -69,6 +69,7 @@ class OrderManager(IObserver):
         self._customer_active_orders[customer].add(order)
         self._active_orders_count += 1
         self._logger.log(LoggingSource.MANAGER,f"Order #{order.id} has been created for customer #{customer.id}")
+        return order
 
     @property
     def active_orders_count(self) -> int:
@@ -83,6 +84,8 @@ class OrderManager(IObserver):
         return len(self._customers)
 
     def get_customer_active_orders_count(self, customer: Customer) -> int:
+        if customer not in self._customer_active_orders:
+            raise KeyError("Customer is not yet registered in the order manager and has no orders.")
         return len(self._customer_active_orders[customer])
 
     def get_order(self, order_id: int) -> Order:

@@ -14,8 +14,8 @@ if TYPE_CHECKING:
 class CashbackDiscount(Discount):
     def __init__(self, percent: str = "5") -> None:
         percent = Decimal(percent)
-        if percent <= 0:
-            raise ValueError("Cashback discount percent can't be negative or equal to zero")
+        if percent <= 0 or percent > 100:
+            raise ValueError("Cashback discount can only be in the range of 0% to 100%.")
         self._cashback_percent = percent
 
     @property

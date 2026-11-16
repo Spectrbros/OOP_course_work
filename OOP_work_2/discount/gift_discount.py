@@ -24,4 +24,4 @@ class GiftDiscount(Discount):
 
     def apply(self, order: Order) -> None:
         order.apply_gift_discount(self._random_free_gift)
-        Logger().log(LoggingSource.ORDER,f"A gift has been added to order #{order.id}: {self._random_free_gift.type.category} x{self._random_free_gift.quantity}")
+        Logger().log(LoggingSource.DISCOUNT,f"A gift has been added to order #{order.id}: {self._random_free_gift.type.category} x{self._random_free_gift.quantity}")
