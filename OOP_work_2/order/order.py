@@ -39,21 +39,21 @@ class Order(IObservable):
 
     def __str__(self) -> str:
         order_id = self._id
-        order_status = self._status
+        order_status = self._status.value
         customer_id = self._customer.id
-        order_items = ", ".join([f"{i.type.category} x {i.quantity}" for i in self._items])
+        order_items = ", ".join([f"{item.type.category} x {item.quantity}" for item in self._items])
         order_delivery = self._delivery.name if self._delivery is not None else "Not assigned"
         order_delivery_cost = self.delivery_cost
         free_delivery = str(self._free_delivery)
         delivery_region = self._region.value
-        order_discounts = ", ".join([f"{i.name}" for i in self._discounts])
+        order_discounts = ", ".join([f"{discount.name}" for discount in self._discounts]) if len(self._discounts) != 0  else "Not assigned"
         total_price = self.total_price
 
         info = (f"Order ID: {order_id} | "
                 f"Status: {order_status} | "
-                f"Customer: {customer_id} | "
+                f"Customer ID: {customer_id} | "
                 f"Items: {order_items} | "
-                f"Delivery: {order_delivery} ({order_delivery_cost:.2f} rub.) | "
+                f"Delivery: {order_delivery} ({order_delivery_cost:.2f} RUB) | "
                 f"Free delivery: {free_delivery} | "
                 f"Delivery region: {delivery_region} | "
                 f"Discounts: {order_discounts} | "

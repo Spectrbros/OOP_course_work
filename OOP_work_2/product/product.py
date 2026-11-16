@@ -1,5 +1,7 @@
 from decimal import Decimal
 
+from product.catalog import catalog_initialization
+from product.product_category import ProductCategory
 from product.product_type import ProductType
 
 
@@ -34,15 +36,23 @@ class CurrentPrice:
 class Product:
     _next_id = 1
 
-    def __init__(self, category: str, quantity: Quantity, current_price: CurrentPrice) -> None:
+    def __init__(self, category: ProductCategory | str, quantity: Quantity, current_price: CurrentPrice) -> None:
         self._id = Product._next_id
         Product._next_id += 1
         self._quantity = quantity
         self._current_price = current_price
+        if isinstance(category, ProductCategory):
+            category = category.title
         self._type = ProductType.get_type(category)
 
     def __str__(self) -> str:
-        return f"{self._type.category} x{self._quantity.value} | {self.total_price:.2f} rub."
+        return f"{self._type.category} x{self._quantity.value} | {self.total_price:.2f} RUB"
+
+    @classmethod
+    def from_category(cls, category: ProductCategory, quantity: int, price: str | None = None) -> "Product":
+        catalog_initialization()
+        price_str = category.base_price if price is None else price
+        return cls(category, Quantity(quantity), CurrentPrice(price_str))
 
     @property
     def id(self) -> int:

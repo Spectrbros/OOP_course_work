@@ -25,4 +25,4 @@ class PercentDiscount(Discount):
     def apply(self, order: Order) -> None:
         amount = order.total_price * (self._percent / 100)
         order.apply_percent_discount(amount)
-        Logger().log(LoggingSource.DISCOUNT,f"{self.name}: discount of {amount:.2f} rub.")
+        Logger().log(LoggingSource.DISCOUNT,f"{self.name}: discount of {amount:.2f} RUB")

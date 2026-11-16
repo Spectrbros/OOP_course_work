@@ -18,4 +18,4 @@ class FreeDeliveryDiscount(Discount):
     def apply(self, order: Order) -> None:
         previous_cost = order.delivery_cost
         order.apply_free_delivery_discount()
-        Logger().log(LoggingSource.DISCOUNT,f"{self.name}: canceled {previous_cost:.2f} rub.")
+        Logger().log(LoggingSource.DISCOUNT,f"{self.name}: canceled {previous_cost:.2f} RUB")

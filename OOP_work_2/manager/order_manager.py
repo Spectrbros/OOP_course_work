@@ -4,6 +4,7 @@ from observer.i_observer import IObserver
 from observer.order_event import OrderEvent
 from customer.customer import Customer
 from product.product import Product
+from product.catalog import catalog_initialization
 from order.order import Order
 from order.order_status import OrderStatus
 from delivery.delivery_region import DeliveryRegion
@@ -17,6 +18,7 @@ class OrderManager(IObserver):
             raise ValueError("The maximum count of active customer orders can't be less than 1")
         if max_active_orders < 1:
             raise ValueError("The maximum count of active orders can't be less than 1")
+        catalog_initialization()
         self._orders: dict[int, Order] = {}
         self._customers: dict[int, Customer] = {}
         self._customer_active_orders: dict[Customer, set[Order]] = {}
@@ -44,7 +46,7 @@ class OrderManager(IObserver):
             LoggingSource.MANAGER,
             f"Order #{order.id}: "
             f"{event.old_status.value} -> {event.new_status.value}; "
-            f"turnover: {self._turnover:.2f} rub.; "
+            f"turnover: {self._turnover:.2f} RUB; "
             f"active orders: {self.active_orders_count}; "
             f"customers: {self.customer_count}",
         )

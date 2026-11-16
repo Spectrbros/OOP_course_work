@@ -25,4 +25,4 @@ class CashbackDiscount(Discount):
     def apply(self, order: Order) -> None:
         amount = order.total_price * (self._cashback_percent / 100)
         order.apply_cashback_discount(amount)
-        Logger().log(LoggingSource.DISCOUNT, f"{self.name}: accrued {amount:.2f} rub.")
+        Logger().log(LoggingSource.DISCOUNT, f"{self.name}: accrued {amount:.2f} RUB")

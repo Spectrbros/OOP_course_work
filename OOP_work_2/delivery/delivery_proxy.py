@@ -36,7 +36,7 @@ class DeliveryProxy(Delivery):
 
     @property
     def name(self) -> str:
-        return f"Прокси ({self._real_delivery.name})"
+        return f"Прокси ({self._chosen_delivery.name})"
 
     def get_cost(self, order: Order) -> Decimal:
         self.choose_delivery(order)
@@ -49,11 +49,11 @@ class DeliveryProxy(Delivery):
             )
         key = (order.id, order.region, order.total_weight, chosen_delivery.name)
         if key in self._cost_cache:
-            self._logger.log(LoggingSource.DELIVERY,f"Cost from cache: {self._cost_cache[key]:.2f} rub.")
+            self._logger.log(LoggingSource.DELIVERY,f"Cost from cache: {self._cost_cache[key]:.2f} RUB")
             return self._cost_cache[key]
         cost = chosen_delivery.get_cost(order)
         self._cost_cache[key] = cost
-        self._logger.log(LoggingSource.DELIVERY,f"Cost calculation for «{chosen_delivery.name}»: {cost:.2f} rub.")
+        self._logger.log(LoggingSource.DELIVERY,f"Cost calculation for «{chosen_delivery.name}»: {cost:.2f} RUB")
         return cost
 
     def get_estimated_time(self, order: Order) -> str:
