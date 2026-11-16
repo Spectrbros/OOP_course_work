@@ -159,7 +159,13 @@ classDiagram
     кеширование стоимости, автоматический fallback на альтернативную доставку;
   - **Стратегия** — интерфейсы `Discount` и `Delivery` с набором конкретных стратегий;
   - **Легковес** — `ProductType` с общим пулом и каталогом `ProductCategory`.
-- Перегрузка операторов: `order + discount`, `delivery << order`, вывод `str(order)`.
+- Идиоматичные операции взаимодействия: `order + discount` (`__add__`), `order - product`
+  (`__sub__`), `delivery << order` (`__lshift__`), вывод `str(order)`; для неподдерживаемых
+  типов возвращается `NotImplemented`, деловые операции доступны и именованными методами.
+- Явное клонирование изменяемого состояния: `Product.clone()` и `Order.clone()`
+  (подписчики не копируются).
+- Python-особенности: `abc.ABC` + `@abstractmethod`, snake_case, свойства `@property`
+  вместо `get_*`, точка входа `main()` + `if __name__ == "__main__"`.
 - Логирование всех операций с источниками `ORDER`, `DELIVERY`, `DISCOUNT`, `MANAGER`.
 - 5 демонстрационных сценариев.
 
@@ -199,11 +205,15 @@ classDiagram
         -discounts
         -total_price
         +__add__(discount)
+        +__sub__(product)
+        +__str__()
+        +clone()
         +add_item(item)
         +remove_item(id)
         +set_status(status)
         +apply_discount(discount)
         +set_delivery(delivery)
+        +total_weight
         +total_price
     }
     class Customer {
@@ -303,4 +313,3 @@ classDiagram
 
 **Модули:** `manager/`, `order/`, `product/`, `delivery/`, `discount/`, `observer/`,
 `customer/`, `logging/`, `scenarios.py`, `main.py`.
----
