@@ -15,13 +15,11 @@ if TYPE_CHECKING:
 class GiftDiscount(Discount):
     _free_gifts_list = ("mug", "book", "headphones")
 
-    def __init__(self) -> None:
-        self._random_free_gift = Product(random.choice(self._free_gifts_list), Quantity(1), CurrentPrice("0"))
-
     @property
     def name(self) -> str:
-        return f"Free gift «{self._random_free_gift.type.category}»"
+        return "Free gift"
 
     def apply(self, order: Order) -> None:
-        order.apply_gift_discount(self._random_free_gift)
-        Logger().log(LoggingSource.DISCOUNT,f"A gift has been added to order #{order.id}: {self._random_free_gift.type.category} x{self._random_free_gift.quantity}")
+        random_free_gift = Product(random.choice(self._free_gifts_list), Quantity(1), CurrentPrice("0"))
+        order.apply_gift_discount(random_free_gift)
+        Logger().log(LoggingSource.DISCOUNT,f"A gift has been added to order #{order.id}: {random_free_gift.type.category} x{random_free_gift.quantity}")

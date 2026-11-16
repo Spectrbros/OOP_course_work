@@ -47,6 +47,8 @@ class ProductType:
     def register_type(cls, category: str, base_weight: BaseWeight, base_price: BasePrice) -> None:
         if category in cls._pool:
             raise ValueError(f"Category «{category}» exists in the pool and can't be changed")
+        if category in cls._catalog:
+            return
         cls._catalog[category] = (base_weight, base_price)
 
     @property

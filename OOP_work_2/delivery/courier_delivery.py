@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from decimal import Decimal
 
 from delivery.delivery import Delivery
+from delivery.delivery_region import DeliveryRegion
 
 if TYPE_CHECKING:
     from order.order import Order
@@ -15,7 +16,12 @@ class CourierDelivery(Delivery):
     _FREE_KG = Decimal("10")
     _MAX_WEIGHT = 20.0
     _TIME = "1-2 days"
-    _SUPPORTED_REGIONS = {"Moscow", "Saint Petersburg"}
+    _SUPPORTED_REGIONS = {DeliveryRegion.MOSCOW,
+                          DeliveryRegion.SAINT_PETERSBURG,
+                          DeliveryRegion.KAZAN,
+                          DeliveryRegion.NOVOSIBIRSK,
+                          DeliveryRegion.YEKATERINBURG,
+                          DeliveryRegion.NIZHNY_NOVGOROD}
 
     @property
     def name(self) -> str:

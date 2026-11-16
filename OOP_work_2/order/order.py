@@ -9,6 +9,7 @@ from product.product import Product
 from discount.discount import Discount
 from delivery.delivery import Delivery
 from customer.customer import Customer
+from delivery.delivery_region import DeliveryRegion
 from logging.logger import Logger
 from logging.logging_source import LoggingSource
 
@@ -16,9 +17,7 @@ from logging.logging_source import LoggingSource
 class Order(IObservable):
     _next_id = 1
 
-    def __init__(self, customer: Customer, region: str) -> None:
-        if region == "":
-            raise ValueError("Delivery region for the order can't be empty")
+    def __init__(self, customer: Customer, region: DeliveryRegion) -> None:
         self._id = Order._next_id
         Order._next_id += 1
         self._customer = customer
@@ -87,6 +86,7 @@ class Order(IObservable):
 
     @property
     def total_price(self) -> Decimal:
+        self.update_total_price()
         return self._total_price
 
     def update_total_price(self) -> None:

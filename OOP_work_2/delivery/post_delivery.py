@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from decimal import Decimal
 
 from delivery.delivery import Delivery
+from delivery.delivery_region import DeliveryRegion
 
 if TYPE_CHECKING:
     from order.order import Order
@@ -15,7 +16,7 @@ class PostDelivery(Delivery):
     _FREE_KG = Decimal("5")
     _MAX_WEIGHT = 10.0
     _TIME = "5-10 days"
-
+    _SUPPORTED_REGIONS = set(DeliveryRegion)
     @property
     def name(self):
         return "Post"
@@ -29,4 +30,4 @@ class PostDelivery(Delivery):
         return self._TIME
 
     def is_available(self, order: Order) -> bool:
-        return order.total_weight <= self._MAX_WEIGHT
+        return order.total_weight <= self._MAX_WEIGHT and order.region in self._SUPPORTED_REGIONS
