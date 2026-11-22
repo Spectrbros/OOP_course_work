@@ -138,7 +138,7 @@ classDiagram
     WarehouseIterator --> Product : iterates
 ```
 
-**Модули:** `products.py`, `warehouse.py`, `factories.py`, `scenarios.py`, `main.py`.
+**Модули:** `products.py`, `warehouse.py`, `product_factory.py`, `scenarios.py`, `main.py`.
 
 ---
 
