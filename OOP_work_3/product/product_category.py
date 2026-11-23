@@ -4,9 +4,6 @@ from enum import Enum
 
 
 class ProductCategory(Enum):
-    SMARTPHONE = "smartphone"
-    LAPTOP = "laptop"
-    TSHIRT = "t-shirt"
-    JACKET = "jacket"
-    MILK = "milk"
-    BREAD = "bread"
+    ELECTRONICS = "electronics"
+    CLOTHING = "clothing"
+    FOOD = "food"

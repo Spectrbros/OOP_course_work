@@ -1,65 +1,32 @@
-from abc import ABC
-import copy
-
-from product.product import Product
-class Electronics(Product, ABC):
-    def __init__(self, name, price, quantity, weight):
-        super().__init__(name, "electronics", price, quantity, weight)
-
-
-class Clothing(Product, ABC):
-    def __init__(self, name, price, quantity, weight):
-        super().__init__(name, "clothing", price, quantity, weight)
-
-
-class Food(Product, ABC):
-    def __init__(self, name, price, quantity, weight):
-        super().__init__(name, "food", price, quantity, weight)
+from .concrete_categories import Electronics, Clothing, Food
+from .product_type import ProductType
 
 
 class Smartphone(Electronics):
-    def __init__(self, name, price,quantity,weight):
-        super().__init__(name, price, quantity, weight)
-
-    def clone(self) -> "Product":
-        return copy.deepcopy(self)
+    def __init__(self, name, weight, quantity, price) -> None:
+        super().__init__(name, ProductType.SMARTPHONE,weight, quantity, price)
 
 
 class Laptop(Electronics):
-    def __init__(self, name, price,quantity,weight):
-        super().__init__(name, price, quantity, weight)
-
-    def clone(self) -> "Product":
-        return copy.deepcopy(self)
+    def __init__(self, name, weight, quantity, price) -> None:
+        super().__init__(name, ProductType.LAPTOP, weight, quantity, price)
 
 
 class TShirt(Clothing):
-    def __init__(self, name, price,quantity,weight):
-        super().__init__(name, price, quantity, weight)
-
-    def clone(self) -> "Product":
-        return copy.deepcopy(self)
+    def __init__(self, name, weight, quantity, price) -> None:
+        super().__init__(name, ProductType.TSHIRT, weight, quantity, price)
 
 
 class Jacket(Clothing):
-    def __init__(self, name, price,quantity,weight):
-        super().__init__(name, price, quantity, weight)
-
-    def clone(self) -> "Product":
-        return copy.deepcopy(self)
+    def __init__(self, name, weight, quantity, price) -> None:
+        super().__init__(name, ProductType.JACKET, weight, quantity, price)
 
 
 class Milk(Food):
-    def __init__(self, name, price,quantity,weight):
-        super().__init__(name, price, quantity, weight)
-
-    def clone(self) -> "Product":
-        return copy.deepcopy(self)
+    def __init__(self, name, weight, quantity, price) -> None:
+        super().__init__(name, ProductType.MILK, weight, quantity, price)
 
 
 class Bread(Food):
-    def __init__(self, name, price,quantity,weight):
-        super().__init__(name, price, quantity, weight)
-
-    def clone(self) -> "Product":
-        return copy.deepcopy(self)
+    def __init__(self, name, weight, quantity, price) -> None:
+        super().__init__(name, ProductType.BREAD, weight, quantity, price)

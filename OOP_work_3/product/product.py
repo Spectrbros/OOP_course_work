@@ -1,9 +1,15 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 from decimal import Decimal
 import copy
 
-from product_category import ProductCategory
-from product_type import ProductType, Weight
+from .product_type import ProductType
+from .product_category import ProductCategory
+from .shared_data import SharedData, Weight
 
+if TYPE_CHECKING:
+    from warehouse.warehouse import Warehouse
 
 class Quantity:
     def __init__(self, value: int) -> None:
@@ -35,13 +41,14 @@ class Price:
 class Product:
     _next_id = 0
 
-    def __init__(self, name: str,  category: ProductCategory, weight: Weight, quantity: Quantity, price: Price) -> None:
+    def __init__(self, name: str,  category: ProductCategory, product_type: ProductType, weight: float, quantity: int, price: str) -> None:
         Product._next_id += 1
         self._id = Product._next_id
         self._name = name
-        self._category, self._weight = ProductType.get_type(category, weight)
-        self._quantity = quantity
-        self._price = price
+        self._category = category
+        self._type, self._weight = SharedData.get_data(product_type, Weight(weight))
+        self._quantity = Quantity(quantity)
+        self._price = Price(price)
         self._warehouse = None
 
     def __deepcopy__(self, memo):
@@ -70,7 +77,11 @@ class Product:
 
     @property
     def category(self) -> str:
-        return self._category
+        return self._category.value
+
+    @property
+    def type(self) -> str:
+        return self._type.value
 
     @property
     def weight(self) -> float:
@@ -104,10 +115,17 @@ class Product:
 
     def info(self) -> str:
         return (
-            f"ID: {self._id}\n"
-            f"Product name: {self._name}\n"
-            f"Category: {self._category}\n"
-            f"Price (RUB): {self._price.value}\n"
-            f"Quantity (units): {self._quantity.value}\n"
-            f"Weight (kg): {self._weight.value}\n"
+            f"ID: {self.id}\n"
+            f"Product name: {self.name}\n"
+            f"Category: {self.category}\n"
+            f"Type: {self.type}\n"
+            f"Weight (kg): {self.weight}\n"
+            f"Quantity (units): {self.quantity}\n"
+            f"Price (RUB): {self.price}\n"
+        )
+
+    def short_info(self) -> str:
+        return (
+            f"ID: {self._id} | {self.type} | {self.name} | "
+            f"price: {self.price} RUB | quantity: {self.quantity} pcs"
         )
