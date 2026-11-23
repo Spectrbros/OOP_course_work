@@ -1,0 +1,18 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+from abc import ABC, abstractmethod
+
+if TYPE_CHECKING:
+    from order.order import Order
+
+
+class Discount(ABC):
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        ...
+
+    @abstractmethod
+    def apply(self, order: Order) -> None:
+        ...
