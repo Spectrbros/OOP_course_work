@@ -7,8 +7,8 @@ from delivery.delivery import Delivery
 from delivery.courier_delivery import CourierDelivery
 from delivery.pickup_delivery import PickupDelivery
 from delivery.post_delivery import PostDelivery
-from logging.logger import Logger
-from logging.logging_source import LoggingSource
+from logging_service.logger import Logger
+from logging_service.logging_source import LoggingSource
 
 if TYPE_CHECKING:
     from order.order import Order
@@ -30,12 +30,17 @@ class DeliveryProxy(Delivery):
         self._logger = Logger()
 
     def __getattr__(self, attribute: str):
-        if self._chosen_delivery is None:
-            raise ValueError(f"Delivery for order is unavailable")
-        return getattr(self._chosen_delivery, attribute)
+        if attribute.startswith("__") and attribute.endswith("__"):
+            raise AttributeError(attribute)
+        chosen_delivery = self.__dict__.get("_chosen_delivery")
+        if chosen_delivery is None:
+            raise ValueError("Delivery for order is unavailable")
+        return getattr(chosen_delivery, attribute)
 
     @property
     def name(self) -> str:
+        if self._chosen_delivery is None:
+            return "Прокси (недоступна)"
         return f"Прокси ({self._chosen_delivery.name})"
 
     def get_cost(self, order: Order) -> Decimal:
@@ -45,8 +50,7 @@ class DeliveryProxy(Delivery):
             self._logger.log(LoggingSource.DELIVERY,"There are no available delivery methods for order #{order.id}")
             raise ValueError(f"Delivery for order #{order.id} is unavailable")
         if chosen_delivery is not self._real_delivery:
-            self._logger.log(LoggingSource.DELIVERY,f"Delivery method «{self._real_delivery.name}» is not available, chosen «{chosen_delivery.name}»",
-            )
+            self._logger.log(LoggingSource.DELIVERY,f"Delivery method «{self._real_delivery.name}» is not available, chosen «{chosen_delivery.name}»")
         key = (order.id, order.region, order.total_weight, chosen_delivery.name)
         if key in self._cost_cache:
             self._logger.log(LoggingSource.DELIVERY,f"Cost from cache: {self._cost_cache[key]:.2f} RUB")
@@ -57,6 +61,8 @@ class DeliveryProxy(Delivery):
         return cost
 
     def get_estimated_time(self, order: Order | None) -> str:
+        if order is None:
+            raise ValueError(f"To determine an estimated delivery time, the order must be specific.")
         self.choose_delivery(order)
         chosen_delivery = self._chosen_delivery
         if chosen_delivery is None:

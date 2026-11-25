@@ -1,5 +1,5 @@
 from datetime import datetime
-from logging.logging_source import LoggingSource
+from logging_service.logging_source import LoggingSource
 
 _GREEN = "\033[92m"
 _RESET = "\033[0m"
@@ -18,7 +18,6 @@ class Logger:
         timestamp = datetime.now().strftime("%H:%M:%S")
         record = f"[{timestamp}] {source.value}: {message}"
         self._records.append(record)
-        print(f"{_GREEN}{record}{_RESET}")
         if self._enabled:
             print(f"{_GREEN}{record}{_RESET}")
 

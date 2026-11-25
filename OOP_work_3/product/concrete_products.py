@@ -1,4 +1,4 @@
-from .concrete_categories import Electronics, Clothing, Food
+from .concrete_categories import Electronics, Clothing, Food, Home, Books, Sports, Beauty, Tools, Toys
 from .product_type import ProductType
 
 
@@ -30,3 +30,18 @@ class Milk(Food):
 class Bread(Food):
     def __init__(self, name, weight, quantity, price) -> None:
         super().__init__(name, ProductType.BREAD, weight, quantity, price)
+
+
+class Book(Books):
+    def __init__(self, name, weight, quantity, price) -> None:
+        super().__init__(name, ProductType.BOOK, weight, quantity, price)
+
+
+class Mug(Home):
+    def __init__(self, name, weight, quantity, price) -> None:
+        super().__init__(name, ProductType.MUG, weight, quantity, price)
+
+
+class Headphones(Electronics):
+    def __init__(self, name, weight, quantity, price) -> None:
+        super().__init__(name, ProductType.HEADPHONES, weight, quantity, price)

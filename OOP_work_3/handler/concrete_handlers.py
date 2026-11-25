@@ -1,4 +1,4 @@
-from handler import Handler
+from handler.handler import Handler
 
 
 class AddProductHandler(Handler):

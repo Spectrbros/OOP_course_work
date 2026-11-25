@@ -11,6 +11,7 @@ from .shared_data import SharedData, Weight
 if TYPE_CHECKING:
     from warehouse.warehouse import Warehouse
 
+
 class Quantity:
     def __init__(self, value: int) -> None:
         if value <= 0:
@@ -37,6 +38,7 @@ class Price:
     @property
     def value(self) -> Decimal:
         return self._value
+
 
 class Product:
     _next_id = 0
@@ -65,7 +67,7 @@ class Product:
         return result
 
     def clone(self) -> "Product":
-        return Product(self._name, self._category, self._weight, self._quantity, Price(str(self._price.value)))
+        return copy.deepcopy(self)
 
     @property
     def id(self) -> int:
@@ -95,6 +97,10 @@ class Product:
     def price(self) -> Decimal:
         return self._price.value
 
+    @property
+    def total_price(self) -> Decimal:
+        return self._price.value * self._quantity.value
+
     def change_quantity(self, delta: int) -> None:
         self._quantity.change(delta)
 
@@ -102,16 +108,17 @@ class Product:
         self._price = new_price
 
     def transfer_to(self, other: Warehouse):
-        if self._warehouse is other:
-            return
         if other is None:
             raise ValueError("Warehouse for transfer isn't specified")
+        if self._warehouse is other:
+            return
         if self._warehouse is None:
             other.add_product(self)
         else:
             old_warehouse = self._warehouse
             other.add_product(self)
             old_warehouse.remove_by_id(self._id)
+            self._warehouse = other
 
     def info(self) -> str:
         return (

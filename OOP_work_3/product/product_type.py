@@ -10,3 +10,6 @@ class ProductType(Enum):
     JACKET = "jacket"
     MILK = "milk"
     BREAD = "bread"
+    BOOK = "book"
+    MUG = "mug"
+    HEADPHONES = "headphones"

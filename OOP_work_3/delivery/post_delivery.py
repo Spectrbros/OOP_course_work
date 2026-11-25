@@ -17,6 +17,7 @@ class PostDelivery(Delivery):
     _MAX_WEIGHT = 10.0
     _TIME = "5-10 days"
     _SUPPORTED_REGIONS = set(DeliveryRegion)
+
     @property
     def name(self):
         return "Post"

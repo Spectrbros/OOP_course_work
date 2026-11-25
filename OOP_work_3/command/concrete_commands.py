@@ -1,4 +1,4 @@
-from command import Command
+from command.command import Command
 
 
 class AddProductCommand(Command):

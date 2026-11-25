@@ -13,6 +13,14 @@ class Weight:
     def value(self) -> float:
         return self._value
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Weight):
+            return NotImplemented
+        return self._value == other._value
+
+    def __hash__(self) -> int:
+        return hash(self._value)
+
 
 class SharedData:
     _pool: dict[tuple[ProductType, Weight], SharedData] = {}
@@ -31,8 +39,8 @@ class SharedData:
         return data
 
     @property
-    def type(self) -> str:
-        return self._type.value
+    def type(self) -> ProductType:
+        return self._type
 
     @property
     def weight(self) -> float:

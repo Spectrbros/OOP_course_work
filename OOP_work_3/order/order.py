@@ -1,2 +1,197 @@
-class Order:
-    ...
+from decimal import Decimal
+from datetime import datetime
+
+from observer.i_observable import IObservable
+from observer.i_observer import IObserver
+from observer.order_event import OrderEvent
+from order.order_status import OrderStatus
+from order.order_item import OrderItem
+from product.product import Product
+from discount.discount import Discount
+from delivery.delivery import Delivery
+from customer.customer import Customer
+from delivery.delivery_region import DeliveryRegion
+from logging_service.logger import Logger
+from logging_service.logging_source import LoggingSource
+
+
+class Order(IObservable):
+    _next_id = 1
+
+    def __init__(self, customer: Customer, region: DeliveryRegion) -> None:
+        self._id = Order._next_id
+        Order._next_id += 1
+        self._customer = customer
+        self._region = region
+        self._items: list[OrderItem] = []
+        self._status = OrderStatus.PENDING
+        self._delivery = None
+        self._free_delivery = False
+        self._discounts = []
+        self._discount_amount = Decimal("0")
+        self._total_price = Decimal("0")
+        self._observers = []
+        self._created_at = datetime.now()
+        self._logger = Logger()
+
+    def __add__(self, discount: Discount) -> "Order":
+        self.apply_discount(discount)
+        return self
+
+    def __sub__(self, item: Product):
+        self.remove_item(item.id)
+        return self
+
+    def __str__(self) -> str:
+        order_id = self._id
+        order_status = self._status.value
+        customer_id = self._customer.id
+        order_items = ", ".join([f"{item.category} x {item.quantity}" for item in self._items])
+        order_delivery = self._delivery.name if self._delivery is not None else "Not assigned"
+        order_delivery_cost = self.delivery_cost
+        free_delivery = str(self._free_delivery)
+        delivery_region = self._region.value
+        order_discounts = ", ".join([f"{discount.name}" for discount in self._discounts]) if len(self._discounts) != 0  else "Not assigned"
+        total_price = self.total_price
+
+        info = (f"Order ID: {order_id} | "
+                f"Status: {order_status} | "
+                f"Customer ID: {customer_id} | "
+                f"Items: {order_items} | "
+                f"Delivery: {order_delivery} ({order_delivery_cost:.2f} RUB) | "
+                f"Free delivery: {free_delivery} | "
+                f"Delivery region: {delivery_region} | "
+                f"Discounts: {order_discounts} | "
+                f"Total price: {total_price}")
+
+        return info
+
+    def clone(self) -> "Order":
+        clone = Order(self._customer, self._region)
+        clone._items = [item.clone() for item in self._items]
+        clone._status = self._status
+        clone._delivery = self._delivery
+        clone._free_delivery = self._free_delivery
+        clone._discounts = list(self._discounts)
+        clone._discount_amount = self._discount_amount
+        clone.update_total_price()
+        return clone
+
+    @property
+    def id(self) -> int:
+        return self._id
+
+    @property
+    def customer(self) -> Customer:
+        return self._customer
+
+    @property
+    def region(self) -> DeliveryRegion:
+        return self._region
+
+    @property
+    def status(self) -> OrderStatus:
+        return self._status
+
+    @property
+    def delivery_cost(self) -> Decimal:
+        if self._free_delivery or self._delivery is None:
+            return Decimal("0")
+        return self._delivery.get_cost(self)
+
+    @property
+    def total_weight(self) -> float:
+        total_weight = 0.0
+        for item in self._items:
+            total_weight += item.weight * item.quantity
+        return round(total_weight, 3)
+
+    @property
+    def total_price(self) -> Decimal:
+        self.update_total_price()
+        return self._total_price
+
+    def update_total_price(self) -> None:
+        total_price = Decimal("0")
+        for item in self._items:
+            total_price += item.total_price
+        if not self._free_delivery and self._delivery is not None:
+            total_price += self.delivery_cost
+        total_price -= self._discount_amount
+        self._total_price = max(Decimal("0"), total_price)
+
+    def subscribe(self, observer: IObserver) -> None:
+        if observer not in self._observers:
+            self._observers.append(observer)
+
+    def unsubscribe(self, observer: IObserver) -> None:
+        if observer in self._observers:
+            self._observers.remove(observer)
+
+    def notify(self, event: OrderEvent) -> None:
+        for observer in tuple(self._observers):
+            observer.on_order_event(event)
+
+    def set_status(self, new_status: OrderStatus) -> None:
+        if new_status == self._status:
+            return
+        if not self._status.can_transition_to(new_status):
+            raise ValueError(f"Invalid status transition: {self._status.value} -> {new_status.value}")
+        old_status = self._status
+        self._status = new_status
+        self._logger.log(LoggingSource.ORDER,f"Order #{self._id}: status {old_status.value} -> {new_status.value}")
+        event = OrderEvent(self._id, old_status, new_status, datetime.now())
+        self.notify(event)
+
+    def add_item(self, item: Product, quantity: int | None = None) -> None:
+        if self._status != OrderStatus.PENDING:
+            raise ValueError(f"Can't add item: the order is already in the status: {self._status.value}")
+        order_item = OrderItem.from_product(item, quantity)
+        self._items.append(order_item)
+        self.update_total_price()
+        self._logger.log(LoggingSource.ORDER,f"Item added to order #{self._id}: {order_item.category} x{order_item.quantity}")
+
+    def remove_item(self, id: int) -> None:
+        if self._status != OrderStatus.PENDING:
+            raise ValueError(f"Can't remove item: the order is already in the status: {self._status.value}")
+        if id < 1:
+            raise ValueError("Product ID doesn't exist")
+        for index, item in enumerate(self._items):
+            if item.id == id:
+                del self._items[index]
+                self.update_total_price()
+                self._logger.log(LoggingSource.ORDER,f"Item #{id} has been removed from order #{self._id}")
+                return
+        raise ValueError("There is no product with this ID in the order.")
+
+    def get_items(self) -> tuple[OrderItem, ...]:
+        return tuple(self._items)
+
+    def set_delivery(self, delivery: Delivery) -> None:
+        if self._status != OrderStatus.PENDING:
+            raise ValueError(f"Can't set delivery: the order is already in the status: {self._status.value}")
+        self._delivery = delivery
+        self.update_total_price()
+        self._logger.log(LoggingSource.ORDER,f"Delivery assigned to order #{self._id}: {delivery.name}")
+
+    def apply_discount(self, discount: Discount) -> None:
+        if any(isinstance(i, type(discount)) for i in self._discounts):
+            raise ValueError("An order can't have more than one discount of the same type.")
+        if self._status != OrderStatus.PENDING:
+            raise ValueError(f"Can't apply discount: the order is already in the status: {self._status.value}")
+        discount.apply(self)
+        self._discounts.append(discount)
+        self.update_total_price()
+        self._logger.log(LoggingSource.ORDER, f"A discount has been applied to order #{self._id}: {discount.name}")
+
+    def apply_percent_discount(self, amount: Decimal) -> None:
+        self._discount_amount += amount
+
+    def apply_cashback_discount(self, amount: Decimal) -> None:
+        self._customer.add_cashback(amount)
+
+    def apply_free_delivery_discount(self) -> None:
+        self._free_delivery = True
+
+    def apply_gift_discount(self, gift: Product) -> None:
+        self.add_item(gift)

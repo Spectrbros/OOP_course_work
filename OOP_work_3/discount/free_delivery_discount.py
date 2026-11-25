@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from discount.discount import Discount
-from logging.logger import Logger
-from logging.logging_source import LoggingSource
+from logging_service.logger import Logger
+from logging_service.logging_source import LoggingSource
 
 if TYPE_CHECKING:
     from order.order import Order
